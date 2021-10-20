@@ -4,7 +4,7 @@
 *[Isma Hadji](http://www.cse.yorku.ca/~hadjisma/)*<sup>1</sup>, 
 *[Konstantinos G. Derpanis](https://www.cs.ryerson.ca/kosta/)*<sup>1</sup>, 
 *[Allan D. Jepson](https://www.cs.toronto.edu/~jepson/)*<sup>1</sup>,
-and *[Animesh Garg] (https://animesh.garg.tech/)*<sup>2</sup>
+and *[Animesh Garg](https://animesh.garg.tech/)*<sup>2</sup>
 
 <sup>1</sup>Samsung AI Center (SAIC) - Toronto &nbsp;&nbsp;
 <sup>2</sup>University of Toronto &nbsp;&nbsp;
