@@ -12,7 +12,7 @@ and * [Animesh Garg] (https://animesh.garg.tech/)*<sup>1</sup>
 
 #
 <div align="center">
-  <img src="demo/teaser.png" width="600px"/>
+  <img src="images/teaser_new.png" width="600px"/>
 </div>
 
 In this work, we consider the problem of sequence-to-sequence alignment for signals
