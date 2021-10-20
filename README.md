@@ -43,7 +43,7 @@ Code for this project will be availabe here soon! stay tuned...
 If you use this code or our models, please cite our paper:
 ```
 @inproceedings{Drop-DTW,
-  title={Representation Learning via Global Temporal Alignment and Cycle-Consistency},
+  title={Drop-DTW: Aligning Common Signal Between Sequences While Dropping Outliers},
   author={Dvornik, Nikita and Hadji, Isma and Derpanis, Konstantinos G and Garg, Animesh and Jepson, Allan D},
   booktitle={NeurIPS},
   year={2021}
