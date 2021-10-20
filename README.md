@@ -1,12 +1,13 @@
 # Drop-DTW: Aligning Common Signal Between Sequences While Dropping Outliers
 
-*[Nikita Dvornik](https://thoth.inrialpes.fr/people/mdvornik/)*<sup>1</sup>, 
+*[Nikita Dvornik](https://thoth.inrialpes.fr/people/mdvornik/)*<sup>1,2</sup>, 
 *[Isma Hadji](http://www.cse.yorku.ca/~hadjisma/)*<sup>1</sup>, 
 *[Konstantinos G. Derpanis](https://www.cs.ryerson.ca/kosta/)*<sup>1</sup>, 
 *[Allan D. Jepson](https://www.cs.toronto.edu/~jepson/)*<sup>1</sup>,
-and * [Animesh Garg] (https://animesh.garg.tech/)*<sup>1</sup>
+and *[Animesh Garg] (https://animesh.garg.tech/)*<sup>2</sup>
 
 <sup>1</sup>Samsung AI Center (SAIC) - Toronto &nbsp;&nbsp;
+<sup>2</sup>University of Toronto &nbsp;&nbsp;
 * This research was conducted at SAIC-Toronto, funded by Samsung Research, and a provisional patent application has been filed.
 
 
