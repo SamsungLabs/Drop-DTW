@@ -79,4 +79,4 @@ If you use this code or our models, please cite our paper:
 
 [2] Tang et al. "COIN: A Large-scale Dataset for Comprehensive Instructional Video Analysis." CVPR'19
 
-[3] - Miech et al. "End-to-end learning of visual representations from uncurated instructional videos." CVPR'20.
+[3] Miech et al. "End-to-end learning of visual representations from uncurated instructional videos." CVPR'20.
