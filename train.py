@@ -95,7 +95,7 @@ class TrainModule(pl.LightningModule):
         self.name = name
         self.model = model
         self.data = data
-        self.avg_loss_metric = torchmetrics.AverageMeter()
+        self.avg_loss_metric = torchmetrics.MeanMetric()
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=args.wd)

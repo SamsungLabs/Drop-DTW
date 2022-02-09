@@ -97,12 +97,20 @@ def drop_dtw(zx_costs, drop_costs, exclusive=True, contiguous=True, return_label
         return labels
 
 
-def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=True):
+def double_drop_dtw(
+    pairwise_zx_costs,
+    x_drop_costs,
+    z_drop_costs,
+    contiguous=True,
+    one_to_many=True,
+    many_to_one=True,
+    return_labels=False,
+):
     """Drop-DTW algorithm that allows drops from both sequences. See Algorithm 1 in Appendix.
 
     Parameters
     ----------
-    pairwise_zx_costs: np.ndarray [K, N] 
+    pairwise_zx_costs: np.ndarray [K, N]
         pairwise match costs between K steps and N video clips
     x_drop_costs: np.ndarray [N]
         drop costs for each clip
@@ -113,7 +121,7 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
         (i.e. no drops in between the clips)
     """
     K, N = pairwise_zx_costs.shape
-    
+
     # initialize solution matrices
     D = np.zeros([K + 1, N + 1, 4])  # the 4 dimensions are the following states: zx, z-, -x, --
     # no drops allowed in zx DP. Setting the same for all DPs to change later here.
@@ -131,12 +139,12 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
         P[zi, 0, 2], P[zi, 0, 3] = (zi - 1, 0, 2), (zi - 1, 0, 3)
     for xi in range(1, N + 1):
         P[0, xi, 1], P[0, xi, 3] = (0, xi - 1, 1), (0, xi - 1, 3)
-    
+
     # filling in the dynamic tables
     for zi in range(1, K + 1):
         for xi in range(1, N + 1):
             # define frequently met neighbors here
-            diag_neigh_states = [0, 1, 2, 3] # zx, z-, -x, --
+            diag_neigh_states = [0, 1, 2, 3]  # zx, z-, -x, --
             diag_neigh_coords = [(zi - 1, xi - 1) for _ in diag_neigh_states]
             diag_neigh_costs = [D[zi - 1, xi - 1, s] for s in diag_neigh_states]
 
@@ -146,23 +154,37 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
 
             top_pos_neigh_states = [0, 2]  # zx and -x
             top_pos_neigh_coords = [(zi - 1, xi) for _ in top_pos_neigh_states]
-            top_pos_neigh_costs = [D[zi - 1, xi, s] for s in top_pos_neigh_states]  
+            top_pos_neigh_costs = [D[zi - 1, xi, s] for s in top_pos_neigh_states]
 
-            left_neg_neigh_states = [2, 3]  # zx and z-
+            left_neg_neigh_states = [2, 3]  # -x and --
             left_neg_neigh_coords = [(zi, xi - 1) for _ in left_neg_neigh_states]
             left_neg_neigh_costs = [D[zi, xi - 1, s] for s in left_neg_neigh_states]
 
-            top_neg_neigh_states = [1, 3]  # zx and -x
+            top_neg_neigh_states = [1, 3]  # z- and --
             top_neg_neigh_coords = [(zi - 1, xi) for _ in top_neg_neigh_states]
-            top_neg_neigh_costs = [D[zi - 1, xi, s] for s in top_neg_neigh_states]  
+            top_neg_neigh_costs = [D[zi - 1, xi, s] for s in top_neg_neigh_states]
 
-            z_cost_ind, x_cost_ind = zi - 1, xi - 1    # indexind in costs is shifted by 1
+            z_cost_ind, x_cost_ind = zi - 1, xi - 1  # indexind in costs is shifted by 1
 
             # DP 0: coming to zx
-            neigh_states_zx = diag_neigh_states + top_pos_neigh_states + left_pos_neigh_states
-            neigh_coords_zx = diag_neigh_coords + top_pos_neigh_coords + left_pos_neigh_coords
-            neigh_costs_zx = diag_neigh_costs + top_pos_neigh_costs + left_pos_neigh_costs
-            costs_zx = np.array(neigh_costs_zx) + pairwise_zx_costs[z_cost_ind, x_cost_ind] 
+            neigh_states_zx = diag_neigh_states
+            neigh_coords_zx = diag_neigh_coords
+            neigh_costs_zx = diag_neigh_costs
+            if one_to_many:
+                if contiguous:
+                    neigh_states_zx.extend(left_pos_neigh_states[0:1])
+                    neigh_coords_zx.extend(left_pos_neigh_coords[0:1])
+                    neigh_costs_zx.extend(left_pos_neigh_costs[0:1])
+                else:
+                    neigh_states_zx.extend(left_pos_neigh_states)
+                    neigh_coords_zx.extend(left_pos_neigh_coords)
+                    neigh_costs_zx.extend(left_pos_neigh_costs)
+            if many_to_one:
+                neigh_states_zx.extend(top_pos_neigh_states)
+                neigh_coords_zx.extend(top_pos_neigh_coords)
+                neigh_costs_zx.extend(top_pos_neigh_costs)
+
+            costs_zx = np.array(neigh_costs_zx) + pairwise_zx_costs[z_cost_ind, x_cost_ind]
             opt_ind_zx = np.argmin(costs_zx)
             P[zi, xi, 0] = *neigh_coords_zx[opt_ind_zx], neigh_states_zx[opt_ind_zx]
             D[zi, xi, 0] = costs_zx[opt_ind_zx]
@@ -187,9 +209,15 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
 
             # DP 3: coming to --
             neigh_states___ = np.array(left_neg_neigh_states + top_neg_neigh_states)
-            neigh_coords___ = np.array(left_neg_neigh_coords + top_neg_neigh_coords)  # adding negative left and top neighbors
-            costs___ = np.concatenate([left_neg_neigh_costs + x_drop_costs[x_cost_ind],
-                                       top_neg_neigh_costs + z_drop_costs[z_cost_ind],], 0)
+            # adding negative left and top neighbors
+            neigh_coords___ = np.array(left_neg_neigh_coords + top_neg_neigh_coords)
+            costs___ = np.concatenate(
+                [
+                    left_neg_neigh_costs + x_drop_costs[x_cost_ind],
+                    top_neg_neigh_costs + z_drop_costs[z_cost_ind],
+                ],
+                0,
+            )
 
             opt_ind___ = costs___.argmin()
             P[zi, xi, 3] = *neigh_coords___[opt_ind___], neigh_states___[opt_ind___]
@@ -197,7 +225,7 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
 
     cur_state = D[K, N, :].argmin()
     min_cost = D[K, N, cur_state]
-            
+
     # unroll path
     path = []
     zi, xi = K, N
@@ -212,7 +240,14 @@ def double_drop_dtw(pairwise_zx_costs, x_drop_costs, z_drop_costs, contiguous=Tr
             z_dropped.append(zi_prev)
         zi, xi, cur_state = zi_prev, xi_prev, prev_state
 
-    return min_cost, path, x_dropped, z_dropped
+    if return_labels:
+        labels = np.zeros(N)
+        for zi, xi in path:
+            if zi not in z_dropped and xi not in x_dropped:
+                labels[xi - 1] = zi
+        return labels
+    else:
+        return min_cost, path, x_dropped, z_dropped
 
 
 def dtw(dist):

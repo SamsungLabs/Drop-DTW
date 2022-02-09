@@ -34,8 +34,8 @@ retrieval and localization. In all applications, we take a weakly- or unsupervis
 approach and demonstrate state-of-the-art results under these settings.
 
 ## Applications
-The proposed alignment loss enables various downstream applications. Take a look at this video for examples.
-[![Watch the video](demo/supp.png)](https://youtu.be/)
+The proposed alignment loss enables various downstream applications. Take a look
+at [this video](https://youtu.be/lRwrHm_hjO8) for examples.
 
 ## Code
 This is the official PyTorch implementation of Drop-DTW [1] (published at NeurIPS'21). The code includes the core Drop-DTW algorithm as well as the step localization experiments on the COIN dataset [2].

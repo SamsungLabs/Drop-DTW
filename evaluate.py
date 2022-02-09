@@ -149,7 +149,4 @@ if __name__ == '__main__':
     print(f"Recall is {recall:.1f}%")
     print(f"DTW Accuracy is {accuracy_dtw:.1f}%")
     print(f"DTW IoU is {iou_dtw:.1f}%")
-    print('')
-    print(f"std Accuracy is {accuracy_std:.1f}%")
-    print(f"std IoU is {iou_std:.1f}%")
     

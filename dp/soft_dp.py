@@ -14,8 +14,9 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 def softDTW(step_features, frame_features, labels, dist_type='inner', softning='prob',
             gamma_min=0.1, gamma_xz=0.1, step_normalize=True):
     """ function to obtain a soft (differentiable) version of DTW
-            embs1, embs2: embedding of size N*D and M*D (N and M : number of video frames
-            and D: dimensionality of of the embedding vector)
+            step_features: torch.tensor[K, d], step language embeddings, i.e. sequence1,
+            frame_featurues: torch.tensor[N, d], embedding of video frames, i.e. seuqence2
+            labels: array[K], labels of steps
     """
     # defining the function
     _min_fn = minProb if softning == 'prob' else minGamma
@@ -55,9 +56,10 @@ def softDTW(step_features, frame_features, labels, dist_type='inner', softning='
 
 def dropDTW(step_features, frame_features, labels, softning='prob',
             gamma_min=1, gamma_xz=1, step_normalize=True, eps=1e-5):
-    """ function to obtain a soft (differentiable version of DTW) 
-            embs1, embs2: embedding of size N*D and M*D (N and M : number of video frames
-            and D: dimensionality of of the embedding vector)
+    """ function to obtain a soft (differentiable) version of DTW
+            step_features: torch.tensor[K, d], step language embeddings, i.e. sequence1,
+            frame_featurues: torch.tensor[N, d], embedding of video frames, i.e. seuqence2
+            labels: array[K], labels of steps
     """
     # defining the function
     _min_fn = minProb if softning == 'prob' else minGamma
@@ -111,9 +113,9 @@ def dropDTW(step_features, frame_features, labels, softning='prob',
 
 def batch_dropDTW(zx_costs_list, drop_costs_list, softning='prob',
                   exclusive=True, contiguous=True, drop_mode='DropDTW', gamma_min=1):
-    """ function to obtain a soft (differentiable version of DTW) 
-            embs1, embs2: embedding of size N*D and M*D (N and M : number of video frames
-            and D: dimensionality of of the embedding vector)
+    """ A batch version of soft Drop-DTW. Operates on a list of pairwise similarities and drop costs.
+            zx_costs_list: a list of pairwise similarity matrices [tensor[N_1, K_1], ..., tensor[N_B, K_B]]
+            drop_costs_list: a list contatining drop costs for rows in each DP table [tensor[N_1], ..., tensor[N_B]]
     """
     # defining the min function
     min_fn = minProb if softning == 'prob' else minGamma

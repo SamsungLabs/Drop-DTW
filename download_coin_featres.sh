@@ -1,3 +1,5 @@
-wget github.com/dvornikita/DropDTW_files/COIN_features.zip
-unzip COIN_features.zip
-rm COIN_features.zip
+cd Datasets
+wget https://www.eecs.yorku.ca/~kosta/COIN/COIN.zip
+unzip COIN.zip
+rm COIN.zip
+rm -rf __MACOSX
